@@ -1,0 +1,16 @@
+digraph PDT {
+  node [shape=ellipse, fontname="Consolas", style=filled, color=lightgreen];
+  n1 [label="1: START"];
+  n2 [label="2: EXIT"];
+  n3 [label="3: Return"];
+  n4 [label="4: If (Condicion)"];
+  n5 [label="5: Asignacion: z"];
+  n6 [label="6: Asignacion: y"];
+  n7 [label="7: Asignacion: x"];
+  n7 -> n1;
+  n2 -> n3;
+  n3 -> n4;
+  n3 -> n5;
+  n3 -> n6;
+  n4 -> n7;
+}

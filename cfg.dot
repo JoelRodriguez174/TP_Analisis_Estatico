@@ -1,0 +1,17 @@
+digraph CFG {
+  node [shape=box, fontname="Consolas"];
+  n1 [label="1: START\nPDOM: {4,3,1,7,2}"];
+  n2 [label="2: EXIT\nPDOM: {2}"];
+  n3 [label="3: Return\nPDOM: {3,2}"];
+  n4 [label="4: If (Condicion)\nPDOM: {4,3,2}"];
+  n5 [label="5: Asignacion: z\nPDOM: {3,2,5}"];
+  n6 [label="6: Asignacion: y\nPDOM: {3,2,6}"];
+  n7 [label="7: Asignacion: x\nPDOM: {4,3,7,2}"];
+  n1 -> n7;
+  n3 -> n2;
+  n4 -> n5;
+  n4 -> n6;
+  n5 -> n3;
+  n6 -> n3;
+  n7 -> n4;
+}

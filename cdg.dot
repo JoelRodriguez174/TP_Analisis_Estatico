@@ -1,0 +1,16 @@
+digraph CDG {
+  node [shape=note, style=filled, color=orange];
+  n1 [label="1: START"];
+  n1 -> n2;
+  n2 [label="2: EXIT"];
+  n1 -> n3;
+  n3 [label="3: Return"];
+  n1 -> n4;
+  n4 [label="4: If (Condicion)"];
+  n4 -> n5;
+  n5 [label="5: Asignacion: z"];
+  n4 -> n6;
+  n6 [label="6: Asignacion: y"];
+  n1 -> n7;
+  n7 [label="7: Asignacion: x"];
+}

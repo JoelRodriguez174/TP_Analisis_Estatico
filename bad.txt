@@ -1,0 +1,10 @@
+int main() {   
+    x = 3 ;
+    if (y) {
+        z = x+1;
+    }
+    else{
+        y = x+z;
+    }
+    return z;
+}

@@ -1,0 +1,202 @@
+import java_cup.runtime.*;
+import java.util.*;
+
+parser code {:
+    public void report_error(String message, Object info) {
+        System.err.println("Error sintáctico: " + message);
+        if (info instanceof Symbol) {
+            Symbol s = (Symbol) info;
+            System.err.println("En línea: " + (s.left + 1) + ", columna: " + (s.right + 1));
+        }
+    }
+    
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+:}
+
+/* === TERMINALES === */
+terminal String IDENTIFICADOR;
+terminal String NUMERO;
+terminal INT, BOOL, VOID, MAIN, RETURN;
+terminal IF, ELSE, WHILE;
+terminal TRUE, FALSE;
+terminal OPERADOR_ASIGNACION, OPERADOR_SUMA, OPERADOR_MULTIPLICACION;
+terminal PARENTESIS_ABRE, PARENTESIS_CIERRA, LLAVE_ABRE, LLAVE_CIERRA, PUNTO_COMA;
+
+/* === NO TERMINALES === */
+non terminal Nodo Programa;
+non terminal Nodo TipoMain;
+non terminal Nodo Bloque;
+non terminal Nodo Declaraciones;
+non terminal Nodo Declaracion;
+non terminal Nodo Tipo;
+non terminal Nodo Sentencias;
+non terminal Nodo Sentencia;
+non terminal Nodo Asignacion;
+non terminal Nodo Return;
+non terminal Nodo Expresion;
+non terminal Nodo Termino;
+non terminal Nodo Factor;
+
+/* === PRECEDENCIA === */
+precedence left OPERADOR_SUMA;
+precedence left OPERADOR_MULTIPLICACION;
+
+/* === PUNTO DE INICIO === */
+start with Programa;
+
+/* === REGLAS DE PRODUCCIÓN === */
+
+Programa ::= TipoMain:tm MAIN:m PARENTESIS_ABRE PARENTESIS_CIERRA Bloque:bloq
+    {:
+        Nodo prog = new Nodo("Programa", null, mleft, mright);
+        prog.agregarHijo(tm);
+        prog.agregarHijo(new Nodo("Main", null, mleft, mright));
+        prog.agregarHijo(bloq);
+        RESULT = prog;
+    :}
+;
+
+TipoMain ::= VOID:v
+    {: RESULT = new Nodo("TipoMain","void", vleft, vright); :}
+    |
+    INT:i
+    {: RESULT = new Nodo("TipoMain","int", ileft, iright); :}
+    |
+    BOOL:b
+    {: RESULT = new Nodo("TipoMain","bool", bleft, bright); :}
+;
+
+Bloque ::= LLAVE_ABRE Declaraciones:decls Sentencias:stmts LLAVE_CIERRA
+    {:
+        Nodo bloque = new Nodo("Bloque", null, decls.linea, decls.columna);
+        bloque.agregarHijo(decls);
+        bloque.agregarHijo(stmts);
+        RESULT = bloque;
+    :}
+;
+
+Declaraciones ::= Declaracion:d Declaraciones:ds
+    {:
+        Nodo lista = new Nodo("Declaraciones", null, d.linea, d.columna);
+        lista.agregarHijo(d);
+        lista.agregarHijo(ds);
+        RESULT = lista;
+    :}
+    |
+    /* epsilon */
+    {: RESULT = new Nodo("Declaraciones"); :}
+;
+
+Declaracion ::= Tipo:t IDENTIFICADOR:id PUNTO_COMA
+    {:
+        Nodo decl = new Nodo("Declaracion", null, idleft, idright);
+        decl.agregarHijo(t);
+        decl.agregarHijo(new Nodo("Identificador", id, idleft, idright));
+        RESULT = decl;
+    :}
+;
+
+Tipo ::= INT:i
+    {: RESULT = new Nodo("Tipo","int", ileft, iright); :}
+    |
+    BOOL:b
+    {: RESULT = new Nodo("Tipo","bool", bleft, bright); :}
+;
+
+Sentencias ::= Sentencia:s Sentencias:ss
+    {:
+        Nodo lista = new Nodo("Sentencias", null, s.linea, s.columna);
+        lista.agregarHijo(s);
+        lista.agregarHijo(ss);
+        RESULT = lista;
+    :}
+    |
+    /* epsilon */
+    {: RESULT = new Nodo("Sentencias"); :}
+;
+
+Sentencia ::= Asignacion:a
+    {: RESULT = a; :}
+    |
+    Return:r
+    {: RESULT = r; :}
+    |
+    IF PARENTESIS_ABRE Expresion:e PARENTESIS_CIERRA LLAVE_ABRE Sentencias:s1 LLAVE_CIERRA ELSE LLAVE_ABRE Sentencias:s2 LLAVE_CIERRA
+    {:
+        Nodo n = new Nodo("If");
+        n.agregarHijo(e);
+        n.agregarHijo(s1);
+        n.agregarHijo(s2);
+        RESULT = n;
+    :}
+    |
+    WHILE PARENTESIS_ABRE Expresion:e PARENTESIS_CIERRA LLAVE_ABRE Sentencias:s LLAVE_CIERRA
+    {:
+        Nodo n = new Nodo("While");
+        n.agregarHijo(e);
+        n.agregarHijo(s);
+        RESULT = n;
+    :}
+;
+
+Asignacion ::= IDENTIFICADOR:id OPERADOR_ASIGNACION Expresion:expr PUNTO_COMA
+    {:
+        Nodo asign = new Nodo("Asignacion", null, idleft, idright);
+        asign.agregarHijo(new Nodo("Identificador", id, idleft, idright));
+        asign.agregarHijo(expr);
+        RESULT = asign;
+    :}
+;
+
+Return ::= RETURN:r Expresion:e PUNTO_COMA
+    {:
+        Nodo ret = new Nodo("Return", null, rleft, rright);
+        ret.agregarHijo(e);
+        RESULT = ret;
+    :}
+    | RETURN:r PUNTO_COMA
+    {:
+        RESULT = new Nodo("Return","void", rleft, rright);
+    :}
+;
+
+Expresion ::= Expresion:e1 OPERADOR_SUMA:s Termino:e2
+    {:
+        Nodo suma = new Nodo("Suma", null, sleft, sright);
+        suma.agregarHijo(e1);
+        suma.agregarHijo(e2);
+        RESULT = suma;
+    :}
+    | Termino:t
+    {: RESULT = t; :}
+;
+
+Termino ::= Termino:t1 OPERADOR_MULTIPLICACION:m Factor:f
+    {:
+        Nodo mult = new Nodo("Multiplicacion", null, mleft, mright);
+        mult.agregarHijo(t1);
+        mult.agregarHijo(f);
+        RESULT = mult;
+    :}
+    | Factor:f
+    {: RESULT = f; :}
+;
+
+Factor ::= PARENTESIS_ABRE Expresion:e PARENTESIS_CIERRA
+    {: RESULT = e; :}
+    |
+    NUMERO:num
+    {: RESULT = new Nodo("Numero", num, numleft, numright); :}
+    |
+    IDENTIFICADOR:id
+    {: RESULT = new Nodo("Identificador", id, idleft, idright); :}
+    |
+    TRUE:t
+    {: RESULT = new Nodo("Bool","true", tleft, tright); :}
+    |
+    FALSE:f
+    {: RESULT = new Nodo("Bool","false", fleft, fright); :}
+;
