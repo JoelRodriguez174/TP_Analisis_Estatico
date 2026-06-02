@@ -1,5 +1,6 @@
-digraph CDG {
-  node [shape=note, style=filled, color=orange];
+digraph FDG {
+  node [shape=box, style="filled,rounded", fillcolor="#E6F4EA", color="#137333", fontname="Segoe UI", penwidth=1.5];
+  edge [color="#137333", fontname="Segoe UI", penwidth=1.5];
   n1 [label="1: START"];
   n9 [label="9: Asignacion: x = 0"];
   n8 [label="8: Asignacion: y = 0"];
@@ -11,9 +12,14 @@ digraph CDG {
   n1 -> n9;
   n1 -> n8;
   n1 -> n7;
-  n4 -> n4;
   n1 -> n4;
-  n4 -> n6;
-  n4 -> n5;
+  n8 -> n4;
+  n5 -> n4;
+  n6 -> n6;
+  n7 -> n6;
+  n8 -> n5;
+  n5 -> n5;
   n1 -> n3;
+  n6 -> n3;
+  n7 -> n3;
 }

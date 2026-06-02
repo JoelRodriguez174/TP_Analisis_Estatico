@@ -3,12 +3,12 @@ int main() {
     int y;
     int z;   
     
-    x = 3 ;
-    if (y) {
-        z = x+1;
-    }
-    else{
-        y = x+z;
+    x = 0;
+    y = 0;
+    z = 0;
+    while (y < 10) {
+        z = z+1;
+	y = y+1;
     }
     return z;
 }

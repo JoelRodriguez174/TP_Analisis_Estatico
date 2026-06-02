@@ -16,6 +16,7 @@ import java_cup.runtime.*;
 %}
 %%
 [ \t\r\n]+                     { /* ignorar espacios */ }
+"//".*                         { /* ignorar comentarios */ }
 "int"                          { return symbol(sym.INT, yytext()); }
 "bool"                         { return symbol(sym.BOOL, yytext()); }
 "void"                         { return symbol(sym.VOID, yytext()); }
@@ -29,6 +30,7 @@ import java_cup.runtime.*;
 "="                            { return symbol(sym.OPERADOR_ASIGNACION, yytext()); }
 "+"                            { return symbol(sym.OPERADOR_SUMA, yytext()); }
 "*"                            { return symbol(sym.OPERADOR_MULTIPLICACION, yytext()); }
+"<"                            { return symbol(sym.OPERADOR_MENOR, yytext()); }
 "("                            { return symbol(sym.PARENTESIS_ABRE, yytext()); }
 ")"                            { return symbol(sym.PARENTESIS_CIERRA, yytext()); }
 "{"                            { return symbol(sym.LLAVE_ABRE, yytext()); }

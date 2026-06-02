@@ -22,7 +22,7 @@ terminal String NUMERO;
 terminal INT, BOOL, VOID, MAIN, RETURN;
 terminal IF, ELSE, WHILE;
 terminal TRUE, FALSE;
-terminal OPERADOR_ASIGNACION, OPERADOR_SUMA, OPERADOR_MULTIPLICACION;
+terminal OPERADOR_ASIGNACION, OPERADOR_SUMA, OPERADOR_MULTIPLICACION, OPERADOR_MENOR;
 terminal PARENTESIS_ABRE, PARENTESIS_CIERRA, LLAVE_ABRE, LLAVE_CIERRA, PUNTO_COMA;
 
 /* === NO TERMINALES === */
@@ -37,10 +37,12 @@ non terminal Nodo Sentencia;
 non terminal Nodo Asignacion;
 non terminal Nodo Return;
 non terminal Nodo Expresion;
+non terminal Nodo Comparacion;
 non terminal Nodo Termino;
 non terminal Nodo Factor;
 
 /* === PRECEDENCIA === */
+precedence left OPERADOR_MENOR;
 precedence left OPERADOR_SUMA;
 precedence left OPERADOR_MULTIPLICACION;
 
@@ -124,18 +126,18 @@ Sentencia ::= Asignacion:a
     Return:r
     {: RESULT = r; :}
     |
-    IF PARENTESIS_ABRE Expresion:e PARENTESIS_CIERRA LLAVE_ABRE Sentencias:s1 LLAVE_CIERRA ELSE LLAVE_ABRE Sentencias:s2 LLAVE_CIERRA
+    IF:i PARENTESIS_ABRE Expresion:e PARENTESIS_CIERRA LLAVE_ABRE Sentencias:s1 LLAVE_CIERRA ELSE LLAVE_ABRE Sentencias:s2 LLAVE_CIERRA
     {:
-        Nodo n = new Nodo("If");
+        Nodo n = new Nodo("If", null, ileft, iright);
         n.agregarHijo(e);
         n.agregarHijo(s1);
         n.agregarHijo(s2);
         RESULT = n;
     :}
     |
-    WHILE PARENTESIS_ABRE Expresion:e PARENTESIS_CIERRA LLAVE_ABRE Sentencias:s LLAVE_CIERRA
+    WHILE:w PARENTESIS_ABRE Expresion:e PARENTESIS_CIERRA LLAVE_ABRE Sentencias:s LLAVE_CIERRA
     {:
-        Nodo n = new Nodo("While");
+        Nodo n = new Nodo("While", null, wleft, wright);
         n.agregarHijo(e);
         n.agregarHijo(s);
         RESULT = n;
@@ -163,7 +165,18 @@ Return ::= RETURN:r Expresion:e PUNTO_COMA
     :}
 ;
 
-Expresion ::= Expresion:e1 OPERADOR_SUMA:s Termino:e2
+Expresion ::= Expresion:e1 OPERADOR_MENOR:m Comparacion:e2
+    {:
+        Nodo menor = new Nodo("Menor", null, mleft, mright);
+        menor.agregarHijo(e1);
+        menor.agregarHijo(e2);
+        RESULT = menor;
+    :}
+    | Comparacion:c
+    {: RESULT = c; :}
+;
+
+Comparacion ::= Comparacion:e1 OPERADOR_SUMA:s Termino:e2
     {:
         Nodo suma = new Nodo("Suma", null, sleft, sright);
         suma.agregarHijo(e1);

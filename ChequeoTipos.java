@@ -33,6 +33,27 @@ public class ChequeoTipos {
             case "Return":
                 return nodo.hijos.isEmpty() ? "void" : chequear(nodo.hijos.get(0));
 
+            case "If": {
+                String tipoCond = chequear(nodo.hijos.get(0));
+                if (!tipoCond.equals("bool")) {
+                    throw new RuntimeException("Error de tipos en If (línea " + (nodo.linea+1) + 
+                        "): la condición debe ser bool, pero es " + tipoCond);
+                }
+                chequear(nodo.hijos.get(1)); // rama true
+                chequear(nodo.hijos.get(2)); // rama false
+                return "void";
+            }
+
+            case "While": {
+                String tipoCond = chequear(nodo.hijos.get(0));
+                if (!tipoCond.equals("bool")) {
+                    throw new RuntimeException("Error de tipos en While (línea " + (nodo.linea+1) + 
+                        "): la condición debe ser bool, pero es " + tipoCond);
+                }
+                chequear(nodo.hijos.get(1)); // cuerpo
+                return "void";
+            }
+
             case "Identificador":
                 return ts.obtenerTipo(nodo.valor, nodo.linea);
 
@@ -58,6 +79,15 @@ public class ChequeoTipos {
                     throw new RuntimeException("Error de tipos en multiplicación (línea " + (nodo.linea+1) + ")");
                 }
                 return "int";
+            }
+
+            case "Menor": {
+                String t1 = chequear(nodo.hijos.get(0));
+                String t2 = chequear(nodo.hijos.get(1));
+                if (!(t1.equals("int") && t2.equals("int"))) {
+                    throw new RuntimeException("Error de tipos en comparación (línea " + (nodo.linea+1) + ")");
+                }
+                return "bool";
             }
 
             default:

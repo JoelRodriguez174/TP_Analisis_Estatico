@@ -68,9 +68,6 @@ Maneja el almacenamiento de variables durante la compilación y ejecución.
 
 **Integrantes**
 
-- Gil, María de los Ángeles
-- Pedernera Cañadas, Candela Nahir
-- Galarza, Valentín
 - Rodríguez, Joel
 
 # **Ejecución del programa:**

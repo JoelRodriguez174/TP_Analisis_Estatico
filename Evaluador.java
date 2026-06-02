@@ -9,6 +9,14 @@ public class Evaluador {
 
     // Evalúa recursivamente un nodo del AST.
     public int evaluar(Nodo ast) {
+        try {
+            return evaluarInterno(ast);
+        } catch (ReturnException e) {
+            return e.valor;
+        }
+    }
+
+    private int evaluarInterno(Nodo ast) {
         if (ast == null) return 0; // nodo nulo
 
         switch (ast.nombre) {
@@ -30,28 +38,54 @@ public class Evaluador {
             // Asignación de variables 
             case "Asignacion": {
                 String nombreVar = ast.hijos.get(0).valor; // hijo 0 = nombre de la variable
-                int valor = evaluar(ast.hijos.get(1));     // hijo 1 = expresión a evaluar
+                int valor = evaluarInterno(ast.hijos.get(1));     // hijo 1 = expresión a evaluar
                 ts.asignar(nombreVar, valor, ast.linea);   // actualizar valor en tabla
                 return valor;
             }
 
             // Sentencia return 
-            case "Return":
-                return ast.hijos.isEmpty() ? 0 : evaluar(ast.hijos.get(0));
+            case "Return": {
+                int val = ast.hijos.isEmpty() ? 0 : evaluarInterno(ast.hijos.get(0));
+                throw new ReturnException(val);
+            }
 
             case "Numero":
                 return Integer.parseInt(ast.valor);
+            
+            case "Bool":
+                return ast.valor.equals("true") ? 1 : 0;
 
             // Identificadores 
             case "Identificador":
                 return ts.obtener(ast.valor, ast.linea);
 
+            // Estructuras de control
+            case "If": {
+                int condicion = evaluarInterno(ast.hijos.get(0));
+                if (condicion != 0) {
+                    return evaluarInterno(ast.hijos.get(1)); // rama true (Sentencias)
+                } else {
+                    return evaluarInterno(ast.hijos.get(2)); // rama false (Sentencias)
+                }
+            }
+
+            case "While": {
+                int ultimoValor = 0;
+                while (evaluarInterno(ast.hijos.get(0)) != 0) {
+                    ultimoValor = evaluarInterno(ast.hijos.get(1)); // cuerpo (Sentencias)
+                }
+                return ultimoValor;
+            }
+
             // Expresiones aritméticas
             case "Suma":
-                return evaluar(ast.hijos.get(0)) + evaluar(ast.hijos.get(1));
+                return evaluarInterno(ast.hijos.get(0)) + evaluarInterno(ast.hijos.get(1));
 
             case "Multiplicacion":
-                return evaluar(ast.hijos.get(0)) * evaluar(ast.hijos.get(1));
+                return evaluarInterno(ast.hijos.get(0)) * evaluarInterno(ast.hijos.get(1));
+
+            case "Menor":
+                return evaluarInterno(ast.hijos.get(0)) < evaluarInterno(ast.hijos.get(1)) ? 1 : 0;
 
             // Cualquier otro nodo → evalúa sus hijos
             default:
@@ -63,7 +97,7 @@ public class Evaluador {
     private int evaluarHijos(Nodo n) {
         int result = 0;
         for (Nodo h : n.hijos) {
-            result = evaluar(h);
+            result = evaluarInterno(h);
         }
         return result;
     }

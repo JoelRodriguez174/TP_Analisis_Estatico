@@ -1,0 +1,32 @@
+digraph PDG_Slice {
+  node [fontname="Segoe UI", penwidth=1.5];
+  n1 [shape=box, style="filled,rounded", fillcolor="#FFE082", color="#F57C00", fontcolor="#202124", penwidth=2.0, label="1: START"];
+  n9 [shape=box, style="filled,rounded", fillcolor="#F1F3F4", color="#D2D6DC", fontcolor="#9AA0A6", penwidth=1.5, label="9: Asignacion: x = 0"];
+  n8 [shape=box, style="filled,rounded", fillcolor="#FFE082", color="#F57C00", fontcolor="#202124", penwidth=2.0, label="8: Asignacion: y = 0"];
+  n7 [shape=box, style="filled,rounded", fillcolor="#F1F3F4", color="#D2D6DC", fontcolor="#9AA0A6", penwidth=1.5, label="7: Asignacion: z = 0"];
+  n4 [shape=box, style="filled,rounded", fillcolor="#FFE082", color="#F57C00", fontcolor="#202124", penwidth=2.0, label="4: While (y < 10)"];
+  n6 [shape=box, style="filled,rounded", fillcolor="#F1F3F4", color="#D2D6DC", fontcolor="#9AA0A6", penwidth=1.5, label="6: Asignacion: z = z + 1"];
+  n5 [shape=box, style="filled,bold,rounded", fillcolor="#FF8A65", color="#D84315", fontcolor="#202124", penwidth=3.0, label="5: Asignacion: y = y + 1"];
+  n3 [shape=box, style="filled,rounded", fillcolor="#F1F3F4", color="#D2D6DC", fontcolor="#9AA0A6", penwidth=1.5, label="3: Return z"];
+  n1 -> n9 [color="#DADCE0", label="CD", fontcolor="#BCC1C6", penwidth=0.8];
+  n1 -> n8 [color="#1A73E8", label="CD", fontcolor="#1A73E8", penwidth=3.0];
+  n1 -> n7 [color="#DADCE0", label="CD", fontcolor="#BCC1C6", penwidth=0.8];
+  n4 -> n4 [color="#1A73E8", label="CD", fontcolor="#1A73E8", penwidth=3.0];
+  n1 -> n4 [color="#1A73E8", label="CD", fontcolor="#1A73E8", penwidth=3.0];
+  n4 -> n6 [color="#DADCE0", label="CD", fontcolor="#BCC1C6", penwidth=0.8];
+  n4 -> n5 [color="#1A73E8", label="CD", fontcolor="#1A73E8", penwidth=3.0];
+  n1 -> n3 [color="#DADCE0", label="CD", fontcolor="#BCC1C6", penwidth=0.8];
+  n1 -> n9 [color="#DADCE0", label="DD", fontcolor="#BCC1C6", penwidth=0.8];
+  n1 -> n8 [color="#137333", label="DD", fontcolor="#137333", penwidth=3.0];
+  n1 -> n7 [color="#DADCE0", label="DD", fontcolor="#BCC1C6", penwidth=0.8];
+  n1 -> n4 [color="#137333", label="DD", fontcolor="#137333", penwidth=3.0];
+  n8 -> n4 [color="#137333", label="DD", fontcolor="#137333", penwidth=3.0];
+  n5 -> n4 [color="#137333", label="DD", fontcolor="#137333", penwidth=3.0];
+  n6 -> n6 [color="#DADCE0", label="DD", fontcolor="#BCC1C6", penwidth=0.8];
+  n7 -> n6 [color="#DADCE0", label="DD", fontcolor="#BCC1C6", penwidth=0.8];
+  n8 -> n5 [color="#137333", label="DD", fontcolor="#137333", penwidth=3.0];
+  n5 -> n5 [color="#137333", label="DD", fontcolor="#137333", penwidth=3.0];
+  n1 -> n3 [color="#DADCE0", label="DD", fontcolor="#BCC1C6", penwidth=0.8];
+  n6 -> n3 [color="#DADCE0", label="DD", fontcolor="#BCC1C6", penwidth=0.8];
+  n7 -> n3 [color="#DADCE0", label="DD", fontcolor="#BCC1C6", penwidth=0.8];
+}

@@ -1,0 +1,11 @@
+int main() {
+    int i;
+    bool b;
+    i = 0;
+    b = true;
+    while (b) {
+        i = i + 1;
+        b = false;
+    }
+    return i;
+}
